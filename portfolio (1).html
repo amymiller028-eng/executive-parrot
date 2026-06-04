@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Portfolio — People Analytics</title>
+<style>
+  :root{
+    --bg:#faf9f5; --surface:#ffffff; --surface2:#f1efe8;
+    --text:#2c2c2a; --muted:#5f5e5a; --hint:#888780;
+    --border:rgba(0,0,0,0.12); --border2:rgba(0,0,0,0.22);
+    --accent:#534ab7; --radius:12px; --radius-sm:8px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#1f1e1c; --surface:#2a2927; --surface2:#34322f; --text:#f1efe8; --muted:#b4b2a9; --hint:#888780; --border:rgba(255,255,255,0.14); --border2:rgba(255,255,255,0.26); --accent:#afa9ec; }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:var(--font); line-height:1.6;}
+  .wrap{max-width:760px; margin:0 auto; padding:2rem 1.25rem 4rem;}
+  h1{font-size:24px; font-weight:600; margin:0;}
+  .sub{color:var(--muted); font-size:14px; margin:2px 0 0;}
+  .topbar{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:1.5rem;}
+  .back{display:inline-flex; align-items:center; gap:8px; background:none; border:1px solid var(--border2); color:var(--muted); padding:10px 16px; border-radius:var(--radius-sm); font-size:14px; text-decoration:none; font-family:var(--font);}
+  .back:hover{background:var(--surface2);}
+  .intro{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; margin-bottom:1.5rem;}
+  .intro h2{font-size:16px; margin:0 0 8px;}
+  .intro [contenteditable]{outline:none;}
+  .intro [contenteditable]:focus{background:var(--surface2); border-radius:6px;}
+  .editable-hint{font-size:12px; color:var(--hint); margin-top:8px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px;}
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; display:flex; flex-direction:column; gap:8px;}
+  .card h3{font-size:15px; margin:0; outline:none;}
+  .card .tagrow{display:flex; gap:6px; flex-wrap:wrap;}
+  .tag{font-size:11px; background:var(--surface2); color:var(--muted); padding:3px 9px; border-radius:20px;}
+  .card p{font-size:13px; color:var(--muted); margin:0; outline:none; flex:1;}
+  .card a.link{font-size:13px; color:var(--accent); text-decoration:none;}
+  .card [contenteditable]:focus{background:var(--surface2); border-radius:6px;}
+  .addbtn{background:none; border:1px dashed var(--border2); color:var(--muted); border-radius:var(--radius); padding:18px; font-size:14px; cursor:pointer; font-family:var(--font);}
+  .addbtn:hover{background:var(--surface2);}
+  .footer{margin-top:1.75rem;}
+  .ghost{background:none; border:1px solid var(--border2); color:var(--muted); padding:9px 14px; border-radius:var(--radius-sm); font-size:13px; cursor:pointer; font-family:var(--font); margin-right:8px;}
+  .ghost:hover{background:var(--surface2);}
+  .saved-note{font-size:12px; color:var(--hint); margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div>
+      <h1>My portfolio</h1>
+      <p class="sub">People analytics · assessment science · behavior change</p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="back" href="index.html">← Dashboard</a>
+      <a class="back" href="linkedin.html">LinkedIn studio</a>
+    </div>
+  </div>
+
+  <div class="intro">
+    <h2>About</h2>
+    <div contenteditable="true" data-key="about">Org psychologist focused on using assessment data to drive behavior change and build happier, healthier workplaces. Click this text to edit your intro — say who you are, your "why," and what you're building toward.</div>
+    <p class="editable-hint">Tip: click any text on this page to edit it. Changes save automatically in your browser.</p>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="footer">
+    <button class="ghost" id="exportBtn">Export portfolio (JSON)</button>
+    <button class="ghost" id="resetBtn">Reset to template</button>
+  </div>
+  <p class="saved-note">Saved automatically in this browser. Export to back up or move devices.</p>
+
+</div>
+
+<script>
+const KEY = 'portfolio.v1';
+const TEMPLATE = {
+  about: null,
+  cards: [
+    {title:'Case study 1', tags:['Case study','In progress'], desc:'Short description of the problem, what you did, and the result. Add a link when published.', link:'', linkLabel:'Read →'},
+    {title:'Assessment trends report', tags:['2M+ respondents','Published'], desc:'Trends pulled from the assessment database, published to our public URL. Describe the headline finding here.', link:'', linkLabel:'View live →'},
+    {title:'Python analysis', tags:['Python','pandas'], desc:'Notebook turning raw assessment data into a clean, visualized trend. Link to the GitHub notebook.', link:'', linkLabel:'See code →'}
+  ]
+};
+
+let state = load();
+function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s) return s; }catch(e){} return JSON.parse(JSON.stringify(TEMPLATE)); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+
+const aboutEl = document.querySelector('[data-key="about"]');
+if(state.about){ aboutEl.textContent = state.about; }
+aboutEl.oninput = ()=>{ state.about = aboutEl.textContent; save(); };
+
+function render(){
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  state.cards.forEach((c,i)=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      `<h3 contenteditable="true">${c.title}</h3>
+       <div class="tagrow">${c.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+       <p contenteditable="true">${c.desc}</p>
+       <a class="link" href="${c.link||'#'}" ${c.link?'target="_blank"':''}>${c.linkLabel||'Link →'}</a>
+       <button class="ghost" data-del="${i}" style="align-self:flex-start; margin-top:4px;">Remove</button>`;
+    card.querySelector('h3').oninput = (e)=>{ c.title=e.target.textContent; save(); };
+    card.querySelector('p').oninput = (e)=>{ c.desc=e.target.textContent; save(); };
+    card.querySelector('.link').onclick = (e)=>{
+      if(!c.link){ e.preventDefault(); const u=prompt('Paste the link (URL) for this piece:'); if(u){ c.link=u; save(); render(); } }
+    };
+    card.querySelector('[data-del]').onclick = ()=>{ if(confirm('Remove this card?')){ state.cards.splice(i,1); save(); render(); } };
+    grid.appendChild(card);
+  });
+  const add = document.createElement('button');
+  add.className='addbtn'; add.textContent='+ Add a portfolio piece';
+  add.onclick = ()=>{ state.cards.push({title:'New piece', tags:['Tag'], desc:'Describe it here.', link:'', linkLabel:'Link →'}); save(); render(); };
+  grid.appendChild(add);
+}
+
+document.getElementById('resetBtn').onclick = ()=>{ if(confirm('Reset portfolio to the template?')){ localStorage.removeItem(KEY); state=load(); aboutEl.textContent=TEMPLATE.cards?aboutEl.textContent:''; location.reload(); } };
+document.getElementById('exportBtn').onclick = ()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='portfolio-backup.json'; a.click();
+};
+
+render();
+</script>
+</body>
+</html>
