@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkedIn Brand Studio</title>
+<style>
+  :root{
+    --bg:#faf9f5; --surface:#ffffff; --surface2:#f1efe8;
+    --text:#2c2c2a; --muted:#5f5e5a; --hint:#888780;
+    --border:rgba(0,0,0,0.12); --border2:rgba(0,0,0,0.22);
+    --accent:#534ab7; --success:#0f6e56; --success-bg:#e1f5ee; --success-border:#5dcaa5;
+    --li:#0a66c2; --li-bg:#e6f1fb;
+    --radius:12px; --radius-sm:8px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#1f1e1c; --surface:#2a2927; --surface2:#34322f; --text:#f1efe8; --muted:#b4b2a9; --hint:#888780; --border:rgba(255,255,255,0.14); --border2:rgba(255,255,255,0.26); --accent:#afa9ec; --success:#9fe1cb; --success-bg:#085041; --success-border:#1d9e75; --li:#85b7eb; --li-bg:#0c447c; }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:var(--font); line-height:1.6;}
+  .wrap{max-width:820px; margin:0 auto; padding:2rem 1.25rem 4rem;}
+  h1{font-size:24px; font-weight:600; margin:0;}
+  h2{font-size:18px; font-weight:600; margin:0;}
+  .sub{color:var(--muted); font-size:14px; margin:2px 0 0;}
+  .topbar{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:1.5rem;}
+  .navbtns{display:flex; gap:10px; flex-wrap:wrap;}
+  .navbtn{display:inline-flex; align-items:center; gap:7px; background:none; border:1px solid var(--border2); color:var(--muted); padding:10px 15px; border-radius:var(--radius-sm); font-size:14px; text-decoration:none; font-family:var(--font);}
+  .navbtn:hover{background:var(--surface2);}
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; margin-bottom:1.5rem;}
+  .stat{background:var(--surface2); border-radius:var(--radius-sm); padding:13px 15px;}
+  .stat .lbl{font-size:12px; color:var(--muted); margin:0 0 3px;}
+  .stat .val{font-size:22px; font-weight:600; margin:0;}
+  .stat .val .of{font-size:13px; color:var(--hint); font-weight:400;}
+  .week-note{font-size:12px; margin-top:4px;}
+  .on-track{color:var(--success);} .behind{color:var(--hint);}
+  .section-head{display:flex; align-items:center; gap:9px; margin:1.5rem 0 4px; flex-wrap:wrap;}
+  .li-badge{background:var(--li-bg); color:var(--li); font-size:12px; font-weight:500; padding:3px 10px; border-radius:20px;}
+  .section-desc{color:var(--muted); font-size:13px; margin:0 0 12px;}
+  .li-btn{display:inline-flex; align-items:center; gap:7px; background:var(--li); color:#fff; border:none; padding:11px 18px; border-radius:var(--radius-sm); font-size:14px; font-weight:500; cursor:pointer; font-family:var(--font);}
+  .li-btn:hover{opacity:.9;}
+  .draft{border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); padding:14px 16px; margin-bottom:12px;}
+  .draft-top{display:flex; gap:8px; align-items:center; margin-bottom:8px; flex-wrap:wrap;}
+  .draft-title{font-weight:600; font-size:14px; outline:none; flex:1; min-width:120px;}
+  .draft-title:focus{background:var(--surface2); border-radius:4px;}
+  .status-sel{font-family:var(--font); font-size:12px; padding:5px 8px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text);}
+  .draft textarea{width:100%; font-family:var(--font); font-size:14px; padding:10px 12px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); resize:vertical; min-height:90px; line-height:1.55;}
+  .charcount{font-size:11px; color:var(--hint); text-align:right; margin-top:3px;}
+  .row{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; align-items:center;}
+  .mini{font-size:12px; padding:7px 12px; border-radius:6px; border:1px solid var(--border2); background:none; color:var(--muted); cursor:pointer; font-family:var(--font);}
+  .mini:hover{background:var(--surface2);}
+  .mini.copy{border-color:var(--li); color:var(--li);}
+  .mini.publish{border-color:var(--success); color:var(--success);}
+  .mini.up,.mini.down{padding:7px 10px;}
+  .empty{font-size:13px; color:var(--hint); font-style:italic; margin:0 0 14px;}
+  .pub{border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); padding:14px 16px; margin-bottom:12px;}
+  .pub-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(105px,1fr)); gap:8px; margin-top:8px;}
+  .pub-grid label{font-size:11px; color:var(--hint); display:block; margin-bottom:2px;}
+  .pub-grid input{width:100%; font-family:var(--font); font-size:13px; padding:6px 8px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text);}
+  .pub-topic{font-weight:600; font-size:14px; outline:none;}
+  .pub-topic:focus{background:var(--surface2); border-radius:4px;}
+  .star{color:var(--accent); font-size:12px; white-space:nowrap;}
+  .footer{margin-top:2rem; display:flex; gap:10px; flex-wrap:wrap;}
+  .ghost{background:none; border:1px solid var(--border2); color:var(--muted); padding:9px 14px; border-radius:var(--radius-sm); font-size:13px; cursor:pointer; font-family:var(--font);}
+  .ghost:hover{background:var(--surface2);}
+  .saved-note{font-size:12px; color:var(--hint); margin-top:10px;}
+  .backup-tip{background:var(--li-bg); color:var(--li); font-size:12px; padding:10px 14px; border-radius:var(--radius-sm); margin-top:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div>
+      <h1>LinkedIn brand studio</h1>
+      <p class="sub">Keep a stocked queue of drafts. Post often. Learn what lands.</p>
+    </div>
+    <div class="navbtns">
+      <a class="navbtn" href="index.html">← Dashboard</a>
+      <a class="navbtn" href="portfolio.html">Portfolio</a>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><p class="lbl">Drafts ready</p><p class="val"><span id="readyCount">0</span></p></div>
+    <div class="stat"><p class="lbl">Total drafts</p><p class="val"><span id="draftCount">0</span></p></div>
+    <div class="stat"><p class="lbl">Posted</p><p class="val"><span id="postedCount">0</span></p></div>
+    <div class="stat">
+      <p class="lbl">This week</p><p class="val"><span id="weekCount">0</span><span class="of"> / 3</span></p>
+      <p class="week-note" id="weekNote"></p>
+    </div>
+  </div>
+
+  <div class="section-head"><h2>Draft queue</h2><span class="li-badge">your brand engine</span></div>
+  <p class="section-desc">Add as many as you like. Give each a short title, set its status (idea → drafting → ready), and reorder so your next post is always on top. Click Copy when it's time to post.</p>
+  <button class="li-btn" id="newDraftBtn">+ New draft</button>
+  <div id="drafts" style="margin-top:14px;"></div>
+
+  <div class="section-head"><h2>Published log</h2></div>
+  <p class="section-desc">Log what you posted and how it did. Top performer (by reactions + comments + reposts) is starred automatically.</p>
+  <div id="published"></div>
+
+  <div class="footer">
+    <button class="ghost" id="exportBtn">Back up everything (JSON)</button>
+    <button class="ghost" id="importBtn">Restore from backup</button>
+  </div>
+  <div class="backup-tip">Your drafts save automatically in this browser. Since they're valuable, click "Back up everything" once a week so a cleared browser or a new device can't lose them.</div>
+
+</div>
+
+<script>
+const KEY = 'rampDashboard.v1';
+let state = load();
+function load(){
+  let s={};
+  try{ s=JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ s={}; }
+  if(!s.drafts) s.drafts=[];
+  if(!s.published) s.published=[];
+  // migrate old drafts that had no title/status
+  s.drafts.forEach(d=>{ if(d.title===undefined) d.title='Untitled'; if(d.status===undefined) d.status='drafting'; });
+  return s;
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+function startOfWeek(){ const d=new Date(); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); d.setHours(0,0,0,0); return d; }
+function postsThisWeek(){ const s=startOfWeek(); return state.published.filter(p=>p.date && new Date(p.date+'T00:00:00')>=s).length; }
+
+/* ---------- drafts ---------- */
+function renderDrafts(){
+  const el=document.getElementById('drafts'); el.innerHTML='';
+  if(!state.drafts.length){ el.innerHTML='<p class="empty">No drafts yet. Click "New draft" and start stocking your queue.</p>'; updateStats(); return; }
+  state.drafts.forEach((d,i)=>{
+    const div=document.createElement('div'); div.className='draft';
+    div.innerHTML=
+      `<div class="draft-top">
+         <span class="draft-title" contenteditable="true">${d.title||'Untitled'}</span>
+         <select class="status-sel">
+           <option value="idea"${d.status==='idea'?' selected':''}>💡 Idea</option>
+           <option value="drafting"${d.status==='drafting'?' selected':''}>✍️ Drafting</option>
+           <option value="ready"${d.status==='ready'?' selected':''}>✅ Ready to post</option>
+         </select>
+       </div>
+       <textarea placeholder="Write your post...">${d.text||''}</textarea>
+       <div class="charcount"><span>${(d.text||'').length}</span> characters</div>
+       <div class="row">
+         <button class="mini up">↑</button>
+         <button class="mini down">↓</button>
+         <button class="mini copy">Copy</button>
+         <button class="mini claude">Work on this with Claude ↗</button>
+         <button class="mini publish">Mark as posted →</button>
+         <button class="mini del">Delete</button>
+       </div>`;
+    div.querySelector('.draft-title').oninput=(e)=>{ d.title=e.target.textContent; save(); };
+    div.querySelector('.status-sel').onchange=(e)=>{ d.status=e.target.value; save(); updateStats(); };
+    const ta=div.querySelector('textarea');
+    ta.oninput=(e)=>{ d.text=e.target.value; div.querySelector('.charcount span').textContent=e.target.value.length; save(); };
+    div.querySelector('.copy').onclick=(e)=>{ navigator.clipboard.writeText(d.text||'').then(()=>{ e.target.textContent='Copied ✓'; setTimeout(()=>e.target.textContent='Copy',1500); }); };
+    div.querySelector('.claude').onclick=(e)=>{
+      const prompt='I\'m building my personal brand on LinkedIn in the people analytics / org psychology / EQ assessment space. Here\'s a draft post — help me sharpen it: make it punchier, tighten the hook, and flag anything that sounds generic. Keep my voice.\n\n--- DRAFT'+(d.title&&d.title!=='Untitled'?' ('+d.title+')':'')+' ---\n'+(d.text||'(empty — help me start from the title/idea)');
+      navigator.clipboard.writeText(prompt).then(()=>{
+        e.target.textContent='Copied ✓ opening Claude...';
+        window.open('https://claude.ai/new','_blank');
+        setTimeout(()=>e.target.textContent='Work on this with Claude ↗',2500);
+      });
+    };
+    div.querySelector('.up').onclick=()=>{ if(i>0){ [state.drafts[i-1],state.drafts[i]]=[state.drafts[i],state.drafts[i-1]]; save(); renderDrafts(); } };
+    div.querySelector('.down').onclick=()=>{ if(i<state.drafts.length-1){ [state.drafts[i+1],state.drafts[i]]=[state.drafts[i],state.drafts[i+1]]; save(); renderDrafts(); } };
+    div.querySelector('.publish').onclick=()=>{
+      state.published.unshift({id:uid(), topic:d.title||'', date:todayStr(), image:'', views:'', reactions:'', comments:'', reposts:'', text:d.text||''});
+      state.drafts=state.drafts.filter(x=>x.id!==d.id); save(); renderDrafts(); renderPublished(); };
+    div.querySelector('.del').onclick=()=>{ if(confirm('Delete this draft?')){ state.drafts=state.drafts.filter(x=>x.id!==d.id); save(); renderDrafts(); } };
+    el.appendChild(div);
+  });
+  updateStats();
+}
+document.getElementById('newDraftBtn').onclick=()=>{ state.drafts.unshift({id:uid(), title:'Untitled', status:'idea', text:''}); save(); renderDrafts(); };
+
+/* ---------- published ---------- */
+function totalInteractions(p){ return (+p.reactions||0)+(+p.comments||0)+(+p.reposts||0); }
+function renderPublished(){
+  const el=document.getElementById('published'); el.innerHTML='';
+  if(!state.published.length){ el.innerHTML='<p class="empty">Nothing posted yet. When you mark a draft as posted, it lands here for analytics.</p>'; updateStats(); return; }
+  const maxInter=Math.max(...state.published.map(totalInteractions),0);
+  state.published.forEach(p=>{
+    const isTop=maxInter>0 && totalInteractions(p)===maxInter;
+    const div=document.createElement('div'); div.className='pub';
+    div.innerHTML=
+      `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+         <span class="pub-topic" contenteditable="true">${p.topic||'Click to add topic'}</span>
+         ${isTop?'<span class="star">★ top performer</span>':''}
+       </div>
+       <div class="pub-grid">
+         <div><label>Date posted</label><input type="date" data-f="date" value="${p.date||''}"></div>
+         <div><label>Image ref</label><input type="text" data-f="image" placeholder="chart.png" value="${p.image||''}"></div>
+         <div><label>Views</label><input type="number" data-f="views" value="${p.views||''}"></div>
+         <div><label>Reactions</label><input type="number" data-f="reactions" value="${p.reactions||''}"></div>
+         <div><label>Comments</label><input type="number" data-f="comments" value="${p.comments||''}"></div>
+         <div><label>Reposts</label><input type="number" data-f="reposts" value="${p.reposts||''}"></div>
+       </div>
+       <div class="row" style="margin-top:8px;">
+         <button class="mini viewtext">View post text</button>
+         <button class="mini reuse">Copy text again</button>
+         <button class="mini del">Delete</button>
+       </div>`;
+    div.querySelector('.pub-topic').oninput=(e)=>{ p.topic=e.target.textContent; save(); };
+    div.querySelectorAll('input[data-f]').forEach(inp=>{ inp.onchange=()=>{ p[inp.dataset.f]=inp.value; save(); renderPublished(); }; });
+    div.querySelector('.viewtext').onclick=()=>{ alert(p.text||'(no saved text)'); };
+    div.querySelector('.reuse').onclick=(e)=>{ navigator.clipboard.writeText(p.text||'').then(()=>{ e.target.textContent='Copied ✓'; setTimeout(()=>e.target.textContent='Copy text again',1500); }); };
+    div.querySelector('.del').onclick=()=>{ if(confirm('Delete this post from the log?')){ state.published=state.published.filter(x=>x.id!==p.id); save(); renderPublished(); } };
+    el.appendChild(div);
+  });
+  updateStats();
+}
+
+/* ---------- stats ---------- */
+function updateStats(){
+  document.getElementById('readyCount').textContent=state.drafts.filter(d=>d.status==='ready').length;
+  document.getElementById('draftCount').textContent=state.drafts.length;
+  document.getElementById('postedCount').textContent=state.published.length;
+  const w=postsThisWeek(); document.getElementById('weekCount').textContent=w;
+  const note=document.getElementById('weekNote');
+  if(w>=3){ note.textContent='On track ✓'; note.className='week-note on-track'; }
+  else { note.textContent=(3-w)+' to go'; note.className='week-note behind'; }
+}
+
+/* ---------- backup ---------- */
+document.getElementById('exportBtn').onclick=()=>{ const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ramp-dashboard-backup.json'; a.click(); };
+document.getElementById('importBtn').onclick=()=>{ const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json'; inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ const imported=JSON.parse(r.result); state=Object.assign(state,imported); save(); renderDrafts(); renderPublished(); }catch(e){ alert('Could not read that file.'); } }; r.readAsText(f); }; inp.click(); };
+
+renderDrafts(); renderPublished();
+</script>
+</body>
+</html>
