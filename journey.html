@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Journey — 90 Days</title>
+<style>
+  :root{
+    --bg:#faf9f5; --surface:#ffffff; --surface2:#f1efe8;
+    --text:#2c2c2a; --muted:#5f5e5a; --hint:#888780;
+    --border:rgba(0,0,0,0.12); --border2:rgba(0,0,0,0.22);
+    --accent:#534ab7;
+    --read:#378add; --read-bg:#e6f1fb;
+    --write:#7f77dd; --write-bg:#eeedfe;
+    --data:#d4537e; --data-bg:#fbeaf0;
+    --datawork:#1d9e75; --datawork-bg:#e1f5ee;
+    --empty:#e4e1d8;
+    --radius:12px; --radius-sm:8px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#1f1e1c; --surface:#2a2927; --surface2:#34322f; --text:#f1efe8; --muted:#b4b2a9; --hint:#888780; --border:rgba(255,255,255,0.14); --border2:rgba(255,255,255,0.26); --accent:#afa9ec; --read:#85b7eb; --read-bg:#0c447c; --write:#afa9ec; --write-bg:#3c3489; --data:#ed93b1; --data-bg:#72243e; --datawork:#5dcaa5; --datawork-bg:#085041; --empty:#3a3935; }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:var(--font); line-height:1.6;}
+  .wrap{max-width:820px; margin:0 auto; padding:2rem 1.25rem 4rem;}
+  h1{font-size:24px; font-weight:600; margin:0;}
+  h2{font-size:18px; font-weight:600; margin:0;}
+  .sub{color:var(--muted); font-size:14px; margin:2px 0 0;}
+  .topbar{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:1.5rem;}
+  .navbtns{display:flex; gap:10px; flex-wrap:wrap;}
+  .navbtn{display:inline-flex; align-items:center; gap:7px; background:none; border:1px solid var(--border2); color:var(--muted); padding:10px 15px; border-radius:var(--radius-sm); font-size:14px; text-decoration:none; font-family:var(--font);}
+  .navbtn:hover{background:var(--surface2);}
+  .parrots{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:1.5rem;}
+  @media(max-width:680px){ .parrots{grid-template-columns:1fr;} }
+  .parrot-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px; text-align:center;}
+  .parrot-card.active{border-color:var(--accent); border-width:2px;}
+  .parrot-card h3{font-size:14px; margin:0 0 2px;}
+  .parrot-card .phase-sub{font-size:12px; color:var(--hint); margin:0 0 10px;}
+  .grid-svg{width:100%; height:auto; display:block;}
+  .pct{font-size:13px; color:var(--muted); margin:8px 0 0;}
+  .legend{display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin:0 0 1.5rem; font-size:13px;}
+  .legend span{display:inline-flex; align-items:center; gap:6px; color:var(--muted);}
+  .dot{width:12px; height:12px; border-radius:3px; display:inline-block;}
+  .logger{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:1.5rem;}
+  .logger h2{margin:0 0 4px;}
+  .logger .desc{font-size:13px; color:var(--muted); margin:0 0 12px;}
+  .type-btns{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;}
+  .type-btn{display:inline-flex; align-items:center; gap:7px; border:1px solid var(--border2); background:none; color:var(--text); padding:9px 14px; border-radius:var(--radius-sm); font-size:14px; cursor:pointer; font-family:var(--font);}
+  .type-btn .dot{width:11px; height:11px;}
+  .type-btn.sel{border-width:2px; font-weight:600;}
+  .log-fields label{font-size:12px; color:var(--muted); display:block; margin:8px 0 3px;}
+  .log-fields input, .log-fields textarea{width:100%; font-family:var(--font); font-size:14px; padding:9px 11px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text);}
+  .log-fields textarea{resize:vertical; min-height:60px; line-height:1.5;}
+  .addlog{margin-top:12px; background:var(--accent); color:#fff; border:none; padding:11px 18px; border-radius:var(--radius-sm); font-size:14px; font-weight:500; cursor:pointer; font-family:var(--font);}
+  .addlog:hover{opacity:.9;}
+  .entries{margin-top:6px;}
+  .entry{border:1px solid var(--border); border-left-width:4px; border-radius:0 var(--radius-sm) var(--radius-sm) 0; background:var(--surface); padding:10px 13px; margin-bottom:8px;}
+  .entry .etop{display:flex; justify-content:space-between; gap:10px; align-items:baseline;}
+  .entry .etitle{font-weight:600; font-size:14px;}
+  .entry .edate{font-size:12px; color:var(--hint); white-space:nowrap;}
+  .entry .etake{font-size:13px; color:var(--muted); margin:4px 0 0;}
+  .entry .edel{font-size:11px; color:var(--hint); background:none; border:none; cursor:pointer; padding:0; margin-top:6px; font-family:var(--font);}
+  .empty-note{font-size:13px; color:var(--hint); font-style:italic;}
+  .footer{margin-top:1.5rem; display:flex; gap:10px; flex-wrap:wrap;}
+  .ghost{background:none; border:1px solid var(--border2); color:var(--muted); padding:9px 14px; border-radius:var(--radius-sm); font-size:13px; cursor:pointer; font-family:var(--font);}
+  .ghost:hover{background:var(--surface2);}
+  .saved-note{font-size:12px; color:var(--hint); margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div>
+      <h1>The journey</h1>
+      <p class="sub">Every action fills the parrot. Watch yourself become the expert.</p>
+    </div>
+    <div class="navbtns">
+      <a class="navbtn" href="index.html">Dashboard</a>
+      <a class="navbtn" href="linkedin.html">LinkedIn</a>
+      <a class="navbtn" href="portfolio.html">Portfolio</a>
+    </div>
+  </div>
+
+  <div class="parrots" id="parrots"></div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:var(--read);"></span>Reading</span>
+    <span><span class="dot" style="background:var(--write);"></span>Writing</span>
+    <span><span class="dot" style="background:var(--data);"></span>Data</span>
+    <span><span class="dot" style="background:var(--datawork);"></span>Data-work</span>
+  </div>
+
+  <div class="logger">
+    <h2>Log an action</h2>
+    <p class="desc">Pick what kind of work it was, jot what it was and your takeaway. It fills the current phase's parrot.</p>
+    <div class="type-btns" id="typeBtns"></div>
+    <div class="log-fields">
+      <label>What was it? (article title, post topic, dataset, etc.)</label>
+      <input type="text" id="logWhat" placeholder="e.g. Goleman 1998 EQ leadership review">
+      <label>Takeaway (optional but powerful — your one-line insight)</label>
+      <textarea id="logTake" placeholder="The thing you want to remember or could turn into a post..."></textarea>
+    </div>
+    <button class="addlog" id="addLogBtn">+ Add &amp; fill a cell</button>
+  </div>
+
+  <div class="section" style="margin-bottom:1rem;">
+    <h2>Log</h2>
+    <p class="desc" style="font-size:13px; color:var(--muted); margin:2px 0 12px;">Your reading and takeaways, newest first. This is your knowledge bank — and your post ideas.</p>
+    <div class="entries" id="entries"></div>
+  </div>
+
+  <div class="footer">
+    <button class="ghost" id="exportBtn">Back up everything (JSON)</button>
+    <button class="ghost" id="importBtn">Restore from backup</button>
+  </div>
+  <p class="saved-note">Saves automatically in this browser. Phase is set by your start date on the dashboard; if no start date is set, you are in Phase 1.</p>
+
+</div>
+
+<script>
+const SEQ = {"cols":22,"rows":22,"p1":[[3,12],[3,13],[3,14],[4,11],[4,12],[4,13],[4,14],[4,15],[5,10],[5,11],[5,12],[5,13],[5,14],[5,15],[5,16],[5,17],[6,10],[6,11],[6,12],[6,13],[6,14],[6,15],[6,16],[6,17],[6,18],[7,10],[7,11],[7,12],[7,13],[7,14],[7,15],[7,16],[7,17],[8,9],[8,10],[8,11],[8,12],[8,13],[8,14],[8,15],[9,8],[9,9],[9,10],[9,11],[9,12],[9,13],[9,14],[10,7],[10,8],[10,9],[10,10],[10,11],[10,12],[10,13],[10,14],[10,15],[11,7],[11,8],[11,9],[11,10],[11,11],[11,12],[11,13],[11,14],[11,15],[12,7],[12,8],[12,9],[12,10],[12,11],[12,12],[12,13],[12,14],[12,15],[13,6],[13,7],[13,8],[13,9],[13,10],[13,11],[13,12],[13,13],[13,14],[13,15],[13,16],[14,7],[14,8],[14,9],[14,10],[14,11],[14,12],[14,13],[14,14],[14,15],[15,7],[15,8],[15,9],[15,10],[15,11],[15,12],[15,13],[15,14],[15,15],[16,5],[16,6],[16,7],[16,8],[16,9],[16,10],[16,11],[16,12],[16,13],[16,14],[16,15],[17,3],[17,4],[17,5],[17,6],[17,7],[17,8],[17,9],[17,10],[17,11],[17,12],[17,13],[17,14],[18,3],[18,4],[18,5],[18,6],[18,7],[18,8],[18,9],[18,10],[18,11],[18,12],[18,13],[19,3],[19,4],[19,5],[19,6],[19,7],[19,8],[19,9],[19,11],[20,5],[20,6],[20,7]],"p2":[[3,12],[3,13],[3,14],[4,11],[4,12],[4,13],[4,14],[4,15],[5,10],[5,15],[5,16],[5,17],[6,10],[6,13],[6,15],[6,16],[6,17],[6,18],[7,10],[7,11],[7,15],[7,16],[7,17],[8,9],[8,10],[8,11],[8,12],[8,13],[8,14],[8,15],[9,8],[9,9],[9,10],[9,11],[9,12],[9,13],[9,14],[10,7],[10,8],[10,9],[10,10],[10,11],[10,12],[10,13],[10,14],[10,15],[11,7],[11,8],[11,9],[11,10],[11,11],[11,12],[11,13],[11,14],[11,15],[12,7],[12,8],[12,9],[12,10],[12,11],[12,12],[12,13],[12,14],[12,15],[13,6],[13,7],[13,8],[13,9],[13,10],[13,11],[13,12],[13,13],[13,14],[13,15],[13,16],[14,7],[14,8],[14,9],[14,10],[14,11],[14,12],[14,13],[14,14],[14,15],[15,7],[15,8],[15,9],[15,10],[15,11],[15,12],[15,13],[15,14],[15,15],[16,5],[16,6],[16,7],[16,8],[16,9],[16,10],[16,11],[16,12],[16,13],[16,14],[16,15],[17,3],[17,4],[17,5],[17,6],[17,7],[17,8],[17,9],[17,10],[17,11],[17,12],[17,13],[17,14],[18,3],[18,4],[18,5],[18,6],[18,7],[18,8],[18,9],[18,10],[18,11],[18,12],[18,13],[19,3],[19,4],[19,5],[19,6],[19,7],[19,8],[19,9],[19,11],[20,5],[20,6],[20,7],[5,11],[5,12],[5,13],[5,14],[6,11],[6,12],[6,14],[7,12],[7,13],[7,14]],"p3":[[3,12],[3,13],[3,14],[4,11],[4,12],[4,13],[4,14],[4,15],[5,10],[5,15],[5,16],[5,17],[6,10],[6,13],[6,15],[6,16],[6,17],[6,18],[7,10],[7,11],[7,15],[7,16],[7,17],[8,9],[8,10],[8,11],[8,12],[8,13],[8,14],[8,15],[9,8],[9,9],[9,10],[9,11],[9,12],[9,13],[9,14],[10,7],[10,8],[10,9],[10,10],[10,11],[10,12],[10,13],[10,14],[10,15],[11,7],[11,8],[11,9],[11,10],[11,11],[11,12],[11,13],[11,14],[11,15],[12,7],[12,8],[12,9],[12,10],[12,11],[12,12],[12,13],[12,14],[12,15],[13,6],[13,7],[13,8],[13,9],[13,10],[13,11],[13,12],[13,13],[13,14],[13,15],[13,16],[14,7],[14,8],[14,9],[14,10],[14,11],[14,12],[14,13],[14,14],[14,15],[15,7],[15,8],[15,9],[15,10],[15,11],[15,12],[15,13],[16,5],[16,6],[16,7],[16,8],[16,9],[16,10],[16,11],[16,12],[17,3],[17,4],[17,5],[17,6],[17,7],[17,8],[17,9],[17,10],[17,11],[17,12],[18,3],[18,4],[18,5],[18,6],[18,7],[18,8],[18,9],[18,10],[18,11],[18,12],[19,3],[19,4],[19,5],[19,6],[19,7],[19,8],[19,9],[19,11],[20,5],[20,6],[20,7],[5,11],[5,12],[5,13],[5,14],[6,11],[6,12],[6,14],[7,12],[7,13],[7,14],[15,14],[15,15],[16,13],[16,14],[16,15],[16,16],[17,13],[17,14],[17,15],[17,16],[18,13],[18,14],[18,15],[18,16]]};
+const KEY = 'rampDashboard.v1';
+const TYPES = [
+  {id:'read', label:'Reading', varc:'--read'},
+  {id:'write', label:'Writing', varc:'--write'},
+  {id:'data', label:'Data', varc:'--data'},
+  {id:'datawork', label:'Data-work', varc:'--datawork'}
+];
+const PHASES = [
+  {key:'p1', title:'Days 1\u201330', sub:'The outline emerges'},
+  {key:'p2', title:'Days 31\u201360', sub:'The parrot gets glasses'},
+  {key:'p3', title:'Days 61\u201390', sub:'...and a briefcase'}
+];
+
+let state = load();
+function load(){
+  let s={};
+  try{ s=JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ s={}; }
+  if(!s.journey) s.journey = {entries:[]}; // entries: {id,type,what,take,date,phase}
+  if(!s.journey.entries) s.journey.entries=[];
+  return s;
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function cssVar(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+function currentPhase(){
+  if(!state.startDate) return 0;
+  const start=new Date(state.startDate+'T00:00:00');
+  const now=new Date(todayStr()+'T00:00:00');
+  const day=Math.floor((now-start)/86400000)+1;
+  if(day<=30) return 0;
+  if(day<=60) return 1;
+  return 2;
+}
+
+let selType='read';
+
+function renderTypeBtns(){
+  const el=document.getElementById('typeBtns'); el.innerHTML='';
+  TYPES.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='type-btn'+(t.id===selType?' sel':'');
+    b.style.borderColor = t.id===selType ? cssVar(t.varc) : '';
+    b.innerHTML='<span class="dot" style="background:var('+t.varc+');"></span>'+t.label;
+    b.onclick=()=>{ selType=t.id; renderTypeBtns(); };
+    el.appendChild(b);
+  });
+}
+
+function entriesForPhase(pi){ return state.journey.entries.filter(e=>e.phase===pi); }
+function colorCount(pi, typeId){ return entriesForPhase(pi).filter(e=>e.type===typeId).length; }
+
+function renderParrots(){
+  const el=document.getElementById('parrots'); el.innerHTML='';
+  const cur=currentPhase();
+  PHASES.forEach((ph,pi)=>{
+    const cells=SEQ[ph.key];
+    const total=cells.length;
+    const phaseEntries=entriesForPhase(pi);
+    const filled=phaseEntries.length;
+    const colsN=SEQ.cols, rowsN=SEQ.rows, cell=9, gap=1;
+    const w=colsN*(cell+gap), h=rowsN*(cell+gap);
+    // build a map cell-index -> color based on order of entries
+    let svg='<svg class="grid-svg" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg" role="img"><title>'+ph.title+' parrot</title>';
+    for(let i=0;i<total;i++){
+      const rc=cells[i]; const x=rc[1]*(cell+gap); const y=rc[0]*(cell+gap);
+      let fill='var(--empty)';
+      if(i<filled){
+        const e=phaseEntries[i];
+        const t=TYPES.find(t=>t.id===e.type)||TYPES[0];
+        fill='var('+t.varc+')';
+      }
+      svg+='<rect x="'+x+'" y="'+y+'" width="'+cell+'" height="'+cell+'" rx="1.5" fill="'+fill+'"/>';
+    }
+    svg+='</svg>';
+    const pct=Math.round(filled/total*100);
+    const card=document.createElement('div');
+    card.className='parrot-card'+(pi===cur?' active':'');
+    card.innerHTML='<h3>'+ph.title+(pi===cur?' \u00b7 now':'')+'</h3><p class="phase-sub">'+ph.sub+'</p>'+svg+'<p class="pct">'+filled+' / '+total+' cells \u00b7 '+pct+'%</p>';
+    el.appendChild(card);
+  });
+}
+
+function renderEntries(){
+  const el=document.getElementById('entries'); el.innerHTML='';
+  if(!state.journey.entries.length){ el.innerHTML='<p class="empty-note">Nothing logged yet. Log your first action above to start filling the parrot.</p>'; return; }
+  const sorted=[...state.journey.entries].reverse();
+  sorted.forEach(e=>{
+    const t=TYPES.find(t=>t.id===e.type)||TYPES[0];
+    const div=document.createElement('div');
+    div.className='entry'; div.style.borderLeftColor='var('+t.varc+')';
+    div.innerHTML='<div class="etop"><span class="etitle">'+(e.what||t.label)+'</span><span class="edate">'+t.label+' \u00b7 '+e.date+'</span></div>'+
+      (e.take?'<p class="etake">'+e.take+'</p>':'')+
+      '<button class="edel">Remove</button>';
+    div.querySelector('.edel').onclick=()=>{ if(confirm('Remove this entry? It will empty one parrot cell.')){ state.journey.entries=state.journey.entries.filter(x=>x.id!==e.id); save(); renderAll(); } };
+    el.appendChild(div);
+  });
+}
+
+document.getElementById('addLogBtn').onclick=()=>{
+  const what=document.getElementById('logWhat').value.trim();
+  const take=document.getElementById('logTake').value.trim();
+  if(!what && !take){ alert('Jot at least what it was, so your log is useful later.'); return; }
+  state.journey.entries.push({id:uid(), type:selType, what:what, take:take, date:todayStr(), phase:currentPhase()});
+  save();
+  document.getElementById('logWhat').value=''; document.getElementById('logTake').value='';
+  renderAll();
+};
+
+document.getElementById('exportBtn').onclick=()=>{ const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ramp-dashboard-backup.json'; a.click(); };
+document.getElementById('importBtn').onclick=()=>{ const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json'; inp.onchange=()=>{ const f=inp.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{ try{ state=Object.assign(state,JSON.parse(r.result)); if(!state.journey) state.journey={entries:[]}; save(); renderAll(); }catch(e){ alert('Could not read that file.'); } }; r.readAsText(f); }; inp.click(); };
+
+function renderAll(){ renderTypeBtns(); renderParrots(); renderEntries(); }
+renderAll();
+</script>
+</body>
+</html>
