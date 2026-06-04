@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkedIn Brand Studio</title>
+<style>
+  :root{
+    --bg:#faf9f5; --surface:#ffffff; --surface2:#f1efe8;
+    --text:#2c2c2a; --muted:#5f5e5a; --hint:#888780;
+    --border:rgba(0,0,0,0.12); --border2:rgba(0,0,0,0.22);
+    --accent:#534ab7; --success:#0f6e56; --success-bg:#e1f5ee; --success-border:#5dcaa5;
+    --li:#0a66c2; --li-bg:#e6f1fb;
+    --radius:12px; --radius-sm:8px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#1f1e1c; --surface:#2a2927; --surface2:#34322f; --text:#f1efe8; --muted:#b4b2a9; --hint:#888780; --border:rgba(255,255,255,0.14); --border2:rgba(255,255,255,0.26); --accent:#afa9ec; --success:#9fe1cb; --success-bg:#085041; --success-border:#1d9e75; --li:#85b7eb; --li-bg:#0c447c; }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:var(--font); line-height:1.6;}
+  .wrap{max-width:820px; margin:0 auto; padding:2rem 1.25rem 4rem;}
+  h1{font-size:24px; font-weight:600; margin:0;}
+  h2{font-size:18px; font-weight:600; margin:0;}
+  .sub{color:var(--muted); font-size:14px; margin:2px 0 0;}
+  .topbar{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:1.5rem;}
+  .navbtns{display:flex; gap:10px; flex-wrap:wrap;}
+  .navbtn{display:inline-flex; align-items:center; gap:7px; background:none; border:1px solid var(--border2); color:var(--muted); padding:10px 15px; border-radius:var(--radius-sm); font-size:14px; text-decoration:none; font-family:var(--font);}
+  .navbtn:hover{background:var(--surface2);}
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; margin-bottom:1.5rem;}
+  .stat{background:var(--surface2); border-radius:var(--radius-sm); padding:13px 15px;}
+  .stat .lbl{font-size:12px; color:var(--muted); margin:0 0 3px;}
+  .stat .val{font-size:22px; font-weight:600; margin:0;}
+  .stat .val .of{font-size:13px; color:var(--hint); font-weight:400;}
+  .week-note{font-size:12px; margin-top:4px;}
+  .on-track{color:var(--success);} .behind{color:var(--hint);}
+  .section-head{display:flex; align-items:center; gap:9px; margin:1.5rem 0 4px; flex-wrap:wrap;}
+  .li-badge{background:var(--li-bg); color:var(--li); font-size:12px; font-weight:500; padding:3px 10px; border-radius:20px;}
+  .section-desc{color:var(--muted); font-size:13px; margin:0 0 12px;}
+  .li-btn{display:inline-flex; align-items:center; gap:7px; background:var(--li); color:#fff; border:none; padding:11px 18px; border-radius:var(--radius-sm); font-size:14px; font-weight:500; cursor:pointer; font-family:var(--font);}
+  .li-btn:hover{opacity:.9;}
+  .draft{border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); padding:14px 16px; margin-bottom:12px;}
+  .draft-top{display:flex; gap:8px; align-items:center; margin-bottom:8px; flex-wrap:wrap;}
+  .draft-title{font-weight:600; font-size:14px; outline:none; flex:1; min-width:120px;}
+  .draft-title:focus{background:var(--surface2); border-radius:4px;}
+  .status-sel{font-family:var(--font); font-size:12px; padding:5px 8px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text);}
+  .draft textarea{width:100%; font-family:var(--font); font-size:14px; padding:10px 12px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); resize:vertical; min-height:90px; line-height:1.55;}
+  .charcount{font-size:11px; color:var(--hint); text-align:right; margin-top:3px;}
+  .row{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; align-items:center;}
+  .mini{font-size:12px; padding:7px 12px; border-radius:6px; border:1px solid var(--border2); background:none; color:var(--muted); cursor:pointer; font-family:var(--font);}
+  .mini:hover{background:var(--surface2);}
+  .mini.copy{border-color:var(--li); color:var(--li);}
+  .mini.publish{border-color:var(--success); color:var(--success);}
+  .mini.up,.mini.down{padding:7px 10px;}
+  .empty{font-size:13px; color:var(--hint); font-style:italic; margin:0 0 14px;}
+  .pub{border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); padding:14px 16px; margin-bottom:12px;}
+  .pub-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(105px,1fr)); gap:8px; margin-top:8px;}
+  .pub-grid label{font-size:11px; color:var(--hint); display:block; margin-bottom:2px;}
+  .pub-grid input{width:100%; font-family:var(--font); font-size:13px; padding:6px 8px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text);}
+  .pub-topic{font-weight:600; font-size:14px; outline:none;}
+  .pub-topic:focus{background:var(--surface2); border-radius:4px;}
+  .star{color:var(--accent); font-size:12px; white-space:nowrap;}
+  .footer{margin-top:2rem; display:flex; gap:10px; flex-wrap:wrap;}
+  .ghost{background:none; border:1px solid var(--border2); color:var(--muted); padding:9px 14px; border-radius:var(--radius-sm); font-size:13px; cursor:pointer; font-family:var(--font);}
+  .ghost:hover{background:var(--surface2);}
+  .saved-note{font-size:12px; color:var(--hint); margin-top:10px;}
+  .backup-tip{background:var(--li-bg); color:var(--li); font-size:12px; padding:10px 14px; border-radius:var(--radius-sm); margin-top:14px;}
+  .brand-panel{background:var(--li-bg); border-radius:var(--radius); padding:16px 18px; margin-bottom:1.5rem;}
+  .brand-statement{font-size:16px; line-height:1.55; color:var(--text); margin:6px 0 10px; outline:none; padding:6px; border-radius:6px;}
+  .brand-statement:focus{background:var(--bg);}
+  .brand-legs{font-size:13px; color:var(--muted); margin:0;}
+  .idea-controls{margin-bottom:12px;}
+  .idea-list{display:flex; flex-direction:column; gap:8px; margin-bottom:1.5rem;}
+  .idea{border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface); padding:11px 14px; display:flex; gap:12px; align-items:center;}
+  .idea-text{flex:1; font-size:14px; line-height:1.45;}
+  .idea-use{font-size:12px; padding:7px 12px; border-radius:6px; border:1px solid var(--li); color:var(--li); background:none; cursor:pointer; font-family:var(--font); white-space:nowrap;}
+  .idea-use:hover{background:var(--li-bg);}
+  .brand-summary{background:var(--surface2); border-radius:var(--radius-sm); padding:13px 16px; margin-bottom:12px; font-size:14px; line-height:1.55; color:var(--text);}
+  .brand-summary .bs-empty{color:var(--hint); font-style:italic;}
+  .brand-summary .bs-lead{font-weight:600; color:var(--li);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div>
+      <h1>LinkedIn brand studio</h1>
+      <p class="sub">Keep a stocked queue of drafts. Post often. Learn what lands.</p>
+    </div>
+    <div class="navbtns">
+      <a class="navbtn" href="index.html">← Dashboard</a>
+      <a class="navbtn" href="portfolio.html">Portfolio</a>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><p class="lbl">Drafts ready</p><p class="val"><span id="readyCount">0</span></p></div>
+    <div class="stat"><p class="lbl">Total drafts</p><p class="val"><span id="draftCount">0</span></p></div>
+    <div class="stat"><p class="lbl">Posted</p><p class="val"><span id="postedCount">0</span></p></div>
+    <div class="stat">
+      <p class="lbl">This week</p><p class="val"><span id="weekCount">0</span><span class="of"> / 3</span></p>
+      <p class="week-note" id="weekNote"></p>
+    </div>
+  </div>
+
+  <div class="brand-panel">
+    <div class="section-head" style="margin-top:0;"><h2>My brand</h2><span class="li-badge">who I am</span></div>
+    <p class="brand-statement" id="brandStatement" contenteditable="true"></p>
+    <p class="brand-legs" id="brandLegs"></p>
+  </div>
+
+  <div class="section-head"><h2>Idea bank</h2></div>
+  <p class="section-desc">Myth-busting angles in your voice. Shuffle for more, or send one straight to a new draft.</p>
+  <div class="idea-controls">
+    <button class="mini" id="shuffleIdeas">↻ Shuffle ideas</button>
+  </div>
+  <div id="ideaList" class="idea-list"></div>
+
+  <div class="section-head"><h2>Draft queue</h2><span class="li-badge">your brand engine</span></div>
+  <p class="section-desc">Add as many as you like. Give each a short title, set its status (idea → drafting → ready), and reorder so your next post is always on top. Click Copy when it's time to post.</p>
+  <button class="li-btn" id="newDraftBtn">+ New draft</button>
+  <div id="drafts" style="margin-top:14px;"></div>
+
+  <div class="section-head"><h2>Published log</h2></div>
+  <div class="brand-summary" id="brandSummary"></div>
+  <p class="section-desc">Log what you posted and how it did. Top performer (by reactions + comments + reposts) is starred automatically.</p>
+  <div id="published"></div>
+
+  <div class="footer">
+    <button class="ghost" id="exportBtn">Back up everything (JSON)</button>
+    <button class="ghost" id="importBtn">Restore from backup</button>
+  </div>
+  <div class="backup-tip">Your drafts save automatically in this browser. Since they're valuable, click "Back up everything" once a week so a cleared browser or a new device can't lose them.</div>
+
+</div>
+
+<script>
+const KEY = 'rampDashboard.v1';
+let state = load();
+function load(){
+  let s={};
+  try{ s=JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ s={}; }
+  if(!s.drafts) s.drafts=[];
+  if(!s.published) s.published=[];
+  // migrate old drafts that had no title/status
+  s.drafts.forEach(d=>{ if(d.title===undefined) d.title='Untitled'; if(d.status===undefined) d.status='drafting'; });
+  return s;
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+const DEFAULT_BRAND = "I use real assessment data and org-psych training to bust comfortable workplace myths \u2014 including the myths about data itself. I sit on 2M+ EQ assessment responses, and I'll say when data reveals something real, and when it's biased, misleading, or being used to discriminate.";
+const BRAND_LEGS = "Three legs: myth-busting (your format) \u00b7 assessment science (your credibility) \u00b7 honesty about data's limits (your differentiator). Edit the statement above as it sharpens.";
+
+const IDEA_BANK = [
+  "Myth: \u201cEQ just means being nice.\u201d What the assessment data actually measures \u2014 and why nice has little to do with it.",
+  "The most overused phrase in people analytics: \u201cthe data shows.\u201d Sometimes it shows nothing. How to tell the difference.",
+  "A high score isn't always good to hire for. One trait where the top scorers were the wrong call.",
+  "The same dataset told two opposite stories depending on who sliced it \u2014 a lesson in how bias sneaks into 'objective' numbers.",
+  "Myth: more data = better decisions. When I've seen extra data make a workplace call worse, not better.",
+  "Assessments can quietly discriminate. What to check before you trust a score to make a people decision.",
+  "Everyone repeats 'culture eats strategy.' The actual evidence is messier than the quote.",
+  "Myth: personality tests predict job performance. What millions of assessment responses say about that claim.",
+  "That workplace trend everyone's posting about? It might be an artifact of who got surveyed.",
+  "The difference between a number that's precise and a number that's meaningful \u2014 with a real assessment example.",
+  "Myth: self-aware leaders rate themselves accurately. The gap between self-scores and others' scores is the real story.",
+  "When 'best practices' are just survivorship bias in a suit. How to spot it in workplace advice.",
+  "What a correlation in engagement data does NOT let you claim \u2014 and the expensive mistakes that follow.",
+  "Myth: you fix a culture problem by measuring it more. Measurement without action is just expensive anxiety.",
+  "The assessment question people misread most \u2014 and how that one misread skews whole reports."
+];
+
+function renderBrand(){
+  const el=document.getElementById('brandStatement');
+  el.textContent = state.brand || DEFAULT_BRAND;
+  el.oninput=()=>{ state.brand=el.textContent; save(); };
+  document.getElementById('brandLegs').textContent = BRAND_LEGS;
+}
+
+let shownIdeas=[];
+function shuffleIdeas(){
+  const pool=[...IDEA_BANK];
+  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  shownIdeas=pool.slice(0,5);
+  renderIdeas();
+}
+function renderIdeas(){
+  const el=document.getElementById('ideaList'); el.innerHTML='';
+  shownIdeas.forEach(text=>{
+    const div=document.createElement('div'); div.className='idea';
+    const t=document.createElement('span'); t.className='idea-text'; t.textContent=text;
+    const b=document.createElement('button'); b.className='idea-use'; b.textContent='Use as draft →';
+    b.onclick=()=>{
+      state.drafts.unshift({id:uid(), title:text.slice(0,42)+(text.length>42?'\u2026':''), status:'idea', text:text+'\n\n'});
+      save(); renderDrafts();
+      const d=document.getElementById('drafts'); if(d) window.scrollTo({top:d.getBoundingClientRect().top+window.scrollY-80, behavior:'smooth'});
+    };
+    div.appendChild(t); div.appendChild(b); el.appendChild(div);
+  });
+}
+
+const LEGS = [
+  {key:'myth', label:'myth-busting & data-skepticism', words:['myth','wrong','actually','bust','really','isn\'t','not true','overused','bias','biased','discriminate','misleading','skeptic','question','doesn\'t','assume','artifact','survivorship']},
+  {key:'science', label:'assessment science', words:['assessment','data','score','eq','responses','dataset','research','study','measure','correlation','sample','survey','statistic','million','2m']},
+  {key:'practical', label:'practical translation', words:['how to','leaders','manager','tip','use','apply','steps','practical','should','do this','takeaway','lesson','advice']}
+];
+function classifyPost(p){
+  const txt=((p.topic||'')+' '+(p.text||'')).toLowerCase();
+  let best=null, bestN=0;
+  LEGS.forEach(l=>{ const n=l.words.reduce((c,w)=>c+(txt.includes(w)?1:0),0); if(n>bestN){ bestN=n; best=l.key; } });
+  return best;
+}
+function renderBrandSummary(){
+  const el=document.getElementById('brandSummary');
+  const posts=state.published||[];
+  if(posts.length<2){
+    el.innerHTML='<span class="bs-empty">Once you\u2019ve published a couple of posts, a running read on how your actual output reflects your brand will show up here.</span>';
+    return;
+  }
+  const counts={myth:0,science:0,practical:0,none:0};
+  posts.forEach(p=>{ const c=classifyPost(p); counts[c||'none']++; });
+  const total=posts.length;
+  const legByKey={}; LEGS.forEach(l=>legByKey[l.key]=l.label);
+  const ranked=LEGS.map(l=>({label:l.label,key:l.key,n:counts[l.key]})).sort((a,b)=>b.n-a.n);
+  const top=ranked[0], bottom=ranked[ranked.length-1];
+  const pct=n=>Math.round(n/total*100);
+  let s='<span class="bs-lead">Across your '+total+' published posts:</span> ';
+  if(top.n===0){
+    s+='your topics aren\u2019t landing clearly on any of your three brand legs yet \u2014 they may be too general. Try pulling an angle from the idea bank to anchor the next few.';
+  } else {
+    s+='you\u2019ve leaned most into <strong>'+top.label+'</strong> ('+pct(top.n)+'% of posts). ';
+    if(bottom.n===0){
+      s+='You haven\u2019t posted anything yet that reads as <strong>'+bottom.label+'</strong> \u2014 that\u2019s the leg to feed next if you want a balanced brand.';
+    } else if(top.n>=total*0.6){
+      s+='That\u2019s a strong, focused signal. If you want more range, lighten up on it and give <strong>'+bottom.label+'</strong> more airtime.';
+    } else {
+      s+='Your mix is fairly balanced across legs, with <strong>'+bottom.label+'</strong> the lightest. Nudge that one up to round out the picture.';
+    }
+  }
+  el.innerHTML=s;
+}
+
+function startOfWeek(){ const d=new Date(); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); d.setHours(0,0,0,0); return d; }
+function postsThisWeek(){ const s=startOfWeek(); return state.published.filter(p=>p.date && new Date(p.date+'T00:00:00')>=s).length; }
+
+/* ---------- drafts ---------- */
+function renderDrafts(){
+  const el=document.getElementById('drafts'); el.innerHTML='';
+  if(!state.drafts.length){ el.innerHTML='<p class="empty">No drafts yet. Click "New draft" and start stocking your queue.</p>'; updateStats(); return; }
+  state.drafts.forEach((d,i)=>{
+    const div=document.createElement('div'); div.className='draft';
+    div.innerHTML=
+      `<div class="draft-top">
+         <span class="draft-title" contenteditable="true">${d.title||'Untitled'}</span>
+         <select class="status-sel">
+           <option value="idea"${d.status==='idea'?' selected':''}>💡 Idea</option>
+           <option value="drafting"${d.status==='drafting'?' selected':''}>✍️ Drafting</option>
+           <option value="ready"${d.status==='ready'?' selected':''}>✅ Ready to post</option>
+         </select>
+       </div>
+       <textarea placeholder="Write your post...">${d.text||''}</textarea>
+       <div class="charcount"><span>${(d.text||'').length}</span> characters</div>
+       <div class="row">
+         <button class="mini up">↑</button>
+         <button class="mini down">↓</button>
+         <button class="mini copy">Copy</button>
+         <button class="mini claude">Work on this with Claude ↗</button>
+         <button class="mini publish">Mark as posted →</button>
+         <button class="mini del">Delete</button>
+       </div>`;
+    div.querySelector('.draft-title').oninput=(e)=>{ d.title=e.target.textContent; save(); };
+    div.querySelector('.status-sel').onchange=(e)=>{ d.status=e.target.value; save(); updateStats(); };
+    const ta=div.querySelector('textarea');
+    ta.oninput=(e)=>{ d.text=e.target.value; div.querySelector('.charcount span').textContent=e.target.value.length; save(); };
+    div.querySelector('.copy').onclick=(e)=>{ navigator.clipboard.writeText(d.text||'').then(()=>{ e.target.textContent='Copied ✓'; setTimeout(()=>e.target.textContent='Copy',1500); }); };
+    div.querySelector('.claude').onclick=(e)=>{
+      const prompt='I\'m building my personal brand on LinkedIn in the people analytics / org psychology / EQ assessment space. Here\'s a draft post — help me sharpen it: make it punchier, tighten the hook, and flag anything that sounds generic. Keep my voice.\n\n--- DRAFT'+(d.title&&d.title!=='Untitled'?' ('+d.title+')':'')+' ---\n'+(d.text||'(empty — help me start from the title/idea)');
+      navigator.clipboard.writeText(prompt).then(()=>{
+        e.target.textContent='Copied ✓ opening Claude...';
+        window.open('https://claude.ai/new','_blank');
+        setTimeout(()=>e.target.textContent='Work on this with Claude ↗',2500);
+      });
+    };
+    div.querySelector('.up').onclick=()=>{ if(i>0){ [state.drafts[i-1],state.drafts[i]]=[state.drafts[i],state.drafts[i-1]]; save(); renderDrafts(); } };
+    div.querySelector('.down').onclick=()=>{ if(i<state.drafts.length-1){ [state.drafts[i+1],state.drafts[i]]=[state.drafts[i],state.drafts[i+1]]; save(); renderDrafts(); } };
+    div.querySelector('.publish').onclick=()=>{
+      state.published.unshift({id:uid(), topic:d.title||'', date:todayStr(), image:'', views:'', reactions:'', comments:'', reposts:'', text:d.text||''});
+      state.drafts=state.drafts.filter(x=>x.id!==d.id); save(); renderDrafts(); renderPublished(); };
+    div.querySelector('.del').onclick=()=>{ if(confirm('Delete this draft?')){ state.drafts=state.drafts.filter(x=>x.id!==d.id); save(); renderDrafts(); } };
+    el.appendChild(div);
+  });
+  updateStats();
+}
+document.getElementById('newDraftBtn').onclick=()=>{ state.drafts.unshift({id:uid(), title:'Untitled', status:'idea', text:''}); save(); renderDrafts(); };
+
+/* ---------- published ---------- */
+function totalInteractions(p){ return (+p.reactions||0)+(+p.comments||0)+(+p.reposts||0); }
+function renderPublished(){
+  const el=document.getElementById('published'); el.innerHTML='';
+  if(!state.published.length){ el.innerHTML='<p class="empty">Nothing posted yet. When you mark a draft as posted, it lands here for analytics.</p>'; updateStats(); renderBrandSummary(); return; }
+  const maxInter=Math.max(...state.published.map(totalInteractions),0);
+  state.published.forEach(p=>{
+    const isTop=maxInter>0 && totalInteractions(p)===maxInter;
+    const div=document.createElement('div'); div.className='pub';
+    div.innerHTML=
+      `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+         <span class="pub-topic" contenteditable="true">${p.topic||'Click to add topic'}</span>
+         ${isTop?'<span class="star">★ top performer</span>':''}
+       </div>
+       <div class="pub-grid">
+         <div><label>Date posted</label><input type="date" data-f="date" value="${p.date||''}"></div>
+         <div><label>Image ref</label><input type="text" data-f="image" placeholder="chart.png" value="${p.image||''}"></div>
+         <div><label>Views</label><input type="number" data-f="views" value="${p.views||''}"></div>
+         <div><label>Reactions</label><input type="number" data-f="reactions" value="${p.reactions||''}"></div>
+         <div><label>Comments</label><input type="number" data-f="comments" value="${p.comments||''}"></div>
+         <div><label>Reposts</label><input type="number" data-f="reposts" value="${p.reposts||''}"></div>
+       </div>
+       <div class="row" style="margin-top:8px;">
+         <button class="mini viewtext">View post text</button>
+         <button class="mini reuse">Copy text again</button>
+         <button class="mini del">Delete</button>
+       </div>`;
+    div.querySelector('.pub-topic').oninput=(e)=>{ p.topic=e.target.textContent; save(); };
+    div.querySelectorAll('input[data-f]').forEach(inp=>{ inp.onchange=()=>{ p[inp.dataset.f]=inp.value; save(); renderPublished(); }; });
+    div.querySelector('.viewtext').onclick=()=>{ alert(p.text||'(no saved text)'); };
+    div.querySelector('.reuse').onclick=(e)=>{ navigator.clipboard.writeText(p.text||'').then(()=>{ e.target.textContent='Copied ✓'; setTimeout(()=>e.target.textContent='Copy text again',1500); }); };
+    div.querySelector('.del').onclick=()=>{ if(confirm('Delete this post from the log?')){ state.published=state.published.filter(x=>x.id!==p.id); save(); renderPublished(); } };
+    el.appendChild(div);
+  });
+  updateStats();
+  renderBrandSummary();
+}
+
+/* ---------- stats ---------- */
+function updateStats(){
+  document.getElementById('readyCount').textContent=state.drafts.filter(d=>d.status==='ready').length;
+  document.getElementById('draftCount').textContent=state.drafts.length;
+  document.getElementById('postedCount').textContent=state.published.length;
+  const w=postsThisWeek(); document.getElementById('weekCount').textContent=w;
+  const note=document.getElementById('weekNote');
+  if(w>=3){ note.textContent='On track ✓'; note.className='week-note on-track'; }
+  else { note.textContent=(3-w)+' to go'; note.className='week-note behind'; }
+}
+
+/* ---------- backup ---------- */
+document.getElementById('exportBtn').onclick=()=>{ const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ramp-dashboard-backup.json'; a.click(); };
+document.getElementById('importBtn').onclick=()=>{ const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json'; inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ const imported=JSON.parse(r.result); state=Object.assign(state,imported); save(); renderDrafts(); renderPublished(); }catch(e){ alert('Could not read that file.'); } }; r.readAsText(f); }; inp.click(); };
+
+document.getElementById('shuffleIdeas').onclick=shuffleIdeas;
+
+renderBrand(); shuffleIdeas();
+renderDrafts(); renderPublished();
+</script>
+</body>
+</html>
